@@ -23,7 +23,7 @@ if (!fs.existsSync(adsFilePath)) {
   fs.writeFileSync(adsFilePath, "[]", "utf8");
 }
 
-app.post("/login", (req, res) => {
+app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
@@ -35,7 +35,7 @@ app.post("/login", (req, res) => {
   }
 });
 
-app.post("/add-ad", (req, res) => {
+app.post("/api/ads", (req, res) => {
   const { name, website, placement, script } = req.body;
 
   if (!name || !website || !placement || !script) {
@@ -69,7 +69,7 @@ app.post("/add-ad", (req, res) => {
   });
 });
 
-app.get("/ads", (req, res) => {
+app.get("/api/ads", (req, res) => {
   fs.readFile(adsFilePath, "utf8", (err, data) => {
     if (err) {
       return res.status(500).json({ error: "Error fetching ads" });
@@ -78,7 +78,7 @@ app.get("/ads", (req, res) => {
   });
 });
 
-app.get("/ads/embed_script/:id", (req, res) => {
+app.get("/api/ads/embed_script/:id", (req, res) => {
   fs.readFile(adsFilePath, "utf8", (err, data) => {
     if (err) return res.status(500).json({ error: "Error reading ads file" });
 
@@ -92,7 +92,7 @@ app.get("/ads/embed_script/:id", (req, res) => {
   });
 });
 
-app.get("/ads/:id", (req, res) => {
+app.get("/api/ads/:id", (req, res) => {
   fs.readFile(adsFilePath, "utf8", (err, data) => {
     if (err) {
       return res.status(500).json({ error: "Error fetching ads" });
@@ -108,7 +108,7 @@ app.get("/ads/:id", (req, res) => {
   });
 });
 
-app.put("/ads/:id", (req, res) => {
+app.put("/api/ads/:id", (req, res) => {
   fs.readFile(adsFilePath, "utf8", (err, data) => {
     if (err) {
       return res.status(500).json({ error: "Error fetching ads" });
@@ -132,7 +132,7 @@ app.put("/ads/:id", (req, res) => {
     });
   });
 });
-app.delete("/ads/:id", (req, res) => {
+app.delete("/api/ads/:id", (req, res) => {
   fs.readFile(adsFilePath, "utf8", (err, data) => {
     if (err) {
       return res.status(500).json({ error: "Error fetching ads" });

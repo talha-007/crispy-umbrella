@@ -78,7 +78,7 @@
           };
 
           try {
-            const response = await fetch("http://localhost:3000/add-ad", {
+            const response = await fetch("http://localhost:3000/api/ads", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(newAd),
