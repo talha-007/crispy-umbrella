@@ -6,7 +6,7 @@ const cors = require("cors");
 
 const app = express();
 const PORT = 3000;
-app.use(cors());
+app.options("*", cors());
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static("public")); // Serve static files from 'public' folder
