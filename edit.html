@@ -66,7 +66,7 @@
         }
 
         try {
-          const response = await fetch(`http://localhost:3000/api/ads/${adId}`);
+          const response = await fetch(`http://139.59.60.177/api/ads/${adId}`);
           const ad = await response.json();
 
           document.getElementById("ad_name").value = ad.name;
