@@ -6,7 +6,26 @@ const cors = require("cors");
 
 const app = express();
 const PORT = 3000;
-app.options("*", cors());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://139.59.60.177", // Allow the frontend domain
+        "http://127.0.0.1:5500", // Allow local development
+      ];
+
+      // Check if the origin is in the allowedOrigins array
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error("Not allowed by CORS")); // Block the request
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Allowable HTTP methods
+    credentials: true, // If your requests need credentials like cookies
+  })
+);
+
 // Middleware
 app.use(bodyParser.json());
 app.use(express.static("public")); // Serve static files from 'public' folder
