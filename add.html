@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Ad</title>
+    <script src="adsData.js"></script>
+    <link rel="stylesheet" href="./table.css" />
+  </head>
+  <body>
+    <div
+      class="container"
+      style="height: fit-content !important; margin-top: 5rem"
+    >
+      <h1>Add Ad</h1>
+      <form id="adForm">
+        <div class="wrapper">
+          <div>
+            <label for="ad_name">Ad Name:</label><br />
+            <input type="text" id="ad_name" name="ad_name" required /><br />
+          </div>
+          <div>
+            <label for="website_id">Select Website:</label><br />
+            <select id="website_id" name="website_id" required>
+              <option value="satpal">satpal</option>
+              <option value="vinod">vinod</option>
+              <option value="metypulse.com">metypulse.com</option>
+              <option value="Self">Self</option>
+              <option value="pragatiyojana.com">pragatiyojana.com</option>
+              <option value="jobmomentums.com">jobmomentums.com</option>
+              <option value="airbytegames.com">airbytegames.com</option>
+              <option value="quiz101.airbytegames.com">
+                quiz101.airbytegames.com
+              </option>
+              <option value="pixelbattless.com">pixelbattless.com</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="placement">Ad Placement ID:</label><br />
+            <input type="text" id="placement" name="placement" required /><br />
+          </div>
+        </div>
+
+        <div>
+          <label for="ad_script">Ad Script:</label><br />
+          <textarea id="ad_script" name="ad_script" required></textarea>
+        </div>
+        <br /><br />
+
+        <button type="submit" class="button">Add Ad</button>
+      </form>
+    </div>
+    <script>
+      // Check if the user is authenticated
+      window.onload = function () {
+        if (!localStorage.getItem("isAuthenticated")) {
+          alert("You need to log in first.");
+          window.location.href = "login.html"; // Redirect to login page
+        }
+      };
+
+      document
+        .getElementById("adForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const adName = document.getElementById("ad_name").value;
+          const websiteId = document.getElementById("website_id").value;
+          const placement = document.getElementById("placement").value;
+          const adScript = document.getElementById("ad_script").value;
+
+          const newAd = {
+            name: adName,
+            website: websiteId,
+            placement: placement,
+            script: adScript,
+          };
+
+          try {
+            const response = await fetch("http://localhost:3000/add-ad", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(newAd),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+              alert("Ad added successfully!");
+              document.getElementById("adForm").reset();
+              window.location.href = "index.html";
+            } else {
+              alert(data.error);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to add ad");
+          }
+        });
+    </script>
+  </body>
+</html>

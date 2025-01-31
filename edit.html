@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Ad</title>
+    <link rel="stylesheet" href="./table.css" />
+  </head>
+  <body>
+    <div
+      class="container"
+      style="height: fit-content !important; margin-top: 5rem"
+    >
+      <h1>Edit Ad</h1>
+      <form id="editAdForm">
+        <div class="wrapper">
+          <div>
+            <label for="ad_name">Ad Name:</label><br />
+            <input type="text" id="ad_name" name="ad_name" required /><br />
+          </div>
+          <div>
+            <label for="website_id">Select Website:</label><br />
+            <select id="website_id" name="website_id" required>
+              <option value="satpal">satpal</option>
+              <option value="vinod">vinod</option>
+              <option value="metypulse.com">metypulse.com</option>
+              <option value="Self">Self</option>
+              <option value="pragatiyojana.com">pragatiyojana.com</option>
+              <option value="jobmomentums.com">jobmomentums.com</option>
+              <option value="airbytegames.com">airbytegames.com</option>
+              <option value="quiz101.airbytegames.com">
+                quiz101.airbytegames.com
+              </option>
+              <option value="pixelbattless.com">pixelbattless.com</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="placement">Ad Placement ID:</label><br />
+            <input type="text" id="placement" name="placement" required /><br />
+          </div>
+        </div>
+
+        <div>
+          <label for="ad_script">Ad Script:</label><br />
+          <textarea id="ad_script" name="ad_script" required></textarea>
+        </div>
+        <br /><br />
+
+        <button type="submit" class="button">Update Ad</button>
+      </form>
+    </div>
+    <script>
+      window.onload = async function () {
+        if (!localStorage.getItem("isAuthenticated")) {
+          alert("You need to log in first.");
+          window.location.href = "login.html";
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const adId = urlParams.get("id");
+        if (!adId) {
+          alert("Invalid Ad ID");
+          window.location.href = "index.html";
+          return;
+        }
+
+        try {
+          const response = await fetch(`http://localhost:3000/ads/${adId}`);
+          const ad = await response.json();
+
+          document.getElementById("ad_name").value = ad.name;
+          document.getElementById("website_id").value = ad.website;
+          document.getElementById("placement").value = ad.placement;
+          document.getElementById("ad_script").value = ad.script;
+        } catch (error) {
+          console.error("Error fetching ad details:", error);
+          alert("Failed to load ad details");
+        }
+      };
+
+      document
+        .getElementById("editAdForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const adId = urlParams.get("id");
+
+          const updatedAd = {
+            name: document.getElementById("ad_name").value,
+            website: document.getElementById("website_id").value,
+            placement: document.getElementById("placement").value,
+            script: document.getElementById("ad_script").value,
+          };
+
+          try {
+            const response = await fetch(`http://localhost:3000/ads/${adId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(updatedAd),
+            });
+
+            if (response.ok) {
+              alert("Ad updated successfully!");
+              window.location.href = "index.html";
+            } else {
+              const data = await response.json();
+              alert(data.error || "Failed to update ad");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to update ad");
+          }
+        });
+    </script>
+  </body>
+</html>

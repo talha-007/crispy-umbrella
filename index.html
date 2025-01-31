@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="./style.css" /> -->
+    <link rel="stylesheet" href="./table.css" />
+    <title>Manage Ads</title>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetchAds();
+      });
+
+      function fetchAds() {
+        fetch("http://localhost:3000/ads")
+          .then((response) => response.json())
+          .then((ads) => {
+            const tableBody = document.querySelector("tbody");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            ads.forEach((ad) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+            <td>${ad.id}</td>
+            <td>${ad.name}</td>
+            <td>${ad.website}</td>
+            <td>${ad.adType || "N/A"}</td>
+            <td>${ad.placement}</td>
+            <td>
+              <button class='btn' onclick="editAd(${ad.id})">Edit</button>
+              <button class='btn' onclick="deleteAd(${ad.id})">Delete</button>
+              <button class='btn' onclick="copyEmbedScript(${
+                ad.id
+              })">Copy Script</button>
+              <button class='btn' onclick="viewEmbedScript(${
+                ad.id
+              })">View Script</button>
+            </td>
+          `;
+              tableBody.appendChild(row);
+            });
+          })
+          .catch((error) => console.error("Error fetching ads:", error));
+      }
+
+      function editAd(adId) {
+        window.location.href = `edit.html?id=${adId}`;
+      }
+
+      function deleteAd(adId) {
+        if (confirm("Are you sure you want to delete this ad?")) {
+          fetch(`http://localhost:3000/ads/${adId}`, {
+            method: "DELETE",
+          })
+            .then((response) => {
+              if (!response.ok) throw new Error("Failed to delete ad");
+              alert("Ad deleted successfully!");
+              fetchAds(); // Refresh the table
+            })
+            .catch((error) => console.error("Error deleting ad:", error));
+        }
+      }
+
+      function copyEmbedScript(adId) {
+        fetch(`http://localhost:3000/ads/embed_script/${adId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const tempInput = document.createElement("textarea");
+            tempInput.value = data.embed_code;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("Embed script copied to clipboard!");
+          })
+          .catch((error) => {
+            console.error("Error fetching embed script:", error);
+            alert("Failed to fetch embed script.");
+          });
+      }
+
+      function viewEmbedScript(adId) {
+        fetch(`http://localhost:3000/ads/embed_script/${adId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            alert("Embed Script:\n\n" + data.embed_code);
+          })
+          .catch((error) => {
+            console.error("Error fetching embed script:", error);
+            alert("Failed to fetch embed script.");
+          });
+      }
+
+      function logout() {
+        localStorage.removeItem("isAuthenticated");
+        alert("Logged out successfully.");
+        window.location.href = "login.html";
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Ad Management</h1>
+      <a href="add.html" class="button">Add New Ad</a>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Website</th>
+            <th>Ad Type</th>
+            <th>Placement</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Dynamic ad rows will be inserted here -->
+        </tbody>
+      </table>
+      <button onclick="logout()" class="logout-button">Logout</button>
+    </div>
+  </body>
+</html>
