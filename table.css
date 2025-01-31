@@ -19,6 +19,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 90%;
+  height: fit-content;
 }
 
 h1 {
@@ -48,11 +49,16 @@ h1 {
 .btn:hover {
   background-color: #0056b3;
 }
+.table-container {
+  max-height: 400px; /* Set a maximum height for the table container */
+  overflow-y: auto; /* Enable vertical scrolling */
+  margin-top: 20px; /* Optional: add some spacing from the button above */
+}
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  /* Removed margin-top as it's no longer needed */
 }
 
 thead {
@@ -73,6 +79,26 @@ tbody tr:hover {
 
 td {
   position: relative;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination-button.active {
+  background-color: #0056b3;
 }
 
 input,
