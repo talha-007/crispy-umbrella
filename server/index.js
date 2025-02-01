@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
+const crypto = require("crypto");
+const { encrypt, decrypt } = require("./functions");
 
 const app = express();
 const PORT = 3000;
@@ -44,6 +46,7 @@ if (!fs.existsSync(adsFilePath)) {
 
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
+  console.log("username", username, password);
 
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
     res.json({ success: true });
@@ -68,12 +71,16 @@ app.post("/api/ads", (req, res) => {
     }
 
     let ads = JSON.parse(data);
+    const encryptedData = encrypt(script);
+    console.log("asdaas", encryptedData);
+
     const newAd = {
       id: ads.length + 1,
       name,
       website,
       placement,
       script,
+      encryptedData,
     };
 
     ads.push(newAd);
@@ -106,7 +113,27 @@ app.get("/api/ads/embed_script/:id", (req, res) => {
 
     if (!ad) return res.status(404).json({ error: "Ad not found" });
 
-    const embedCode = `<script>${ad.script}</script>`;
+    // Construct the embed code using the encrypted data
+    const embedCode = ad.encryptedData.encryptedData;
+
+    res.json({ embed_code: embedCode });
+  });
+});
+app.get("/api/ads/view_embed_script/:id", (req, res) => {
+  fs.readFile(adsFilePath, "utf8", (err, data) => {
+    if (err) return res.status(500).json({ error: "Error reading ads file" });
+
+    const ads = JSON.parse(data);
+    const ad = ads.find((ad) => ad.id == req.params.id);
+
+    if (!ad) return res.status(404).json({ error: "Ad not found" });
+
+    // Construct the embed code using the encrypted data
+    const embedCode = {
+      link: ad.encryptedData.link,
+      encryptedData: ad.encryptedData.encryptedData,
+    };
+
     res.json({ embed_code: embedCode });
   });
 });
@@ -175,6 +202,44 @@ app.delete("/api/ads/:id", (req, res) => {
     });
   });
 });
+// API endpoint for encrypting data
+app.post("/api/encrypt", (req, res) => {
+  const { data } = req.body; // Expecting { "data": "your data here" }
+
+  if (!data) {
+    return res.status(400).json({ error: "Data is required for encryption" });
+  }
+
+  try {
+    const link = encrypt(data);
+    return res
+      .status(200)
+      .json({ message: "Data encrypted successfully", link });
+  } catch (error) {
+    console.error("Encryption error:", error.message);
+    return res.status(500).json({ error: "Encryption failed" });
+  }
+});
+
+// API endpoint for decrypting data
+app.get("/ads/serve_ad/:id", (req, res) => {
+  const { id } = req.params; // Expecting { "id": "timestamp string here" }
+
+  if (!id) {
+    return res.status(400).json({ error: "ID is required for decryption" });
+  }
+
+  try {
+    const decryptedData = decrypt(id);
+    return res
+      .status(200)
+      .json({ message: "Data decrypted successfully", data: decryptedData });
+  } catch (error) {
+    console.error("Decryption error:", error.message);
+    return res.status(500).json({ error: "Decryption failed" });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

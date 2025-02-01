@@ -38,19 +38,24 @@
             username,
             password,
           };
+          // http://139.59.60.177/api/login
           try {
-            const response = await fetch("http://139.59.60.177/api/login", {
+            const response = await fetch("http://localhost:3000/api/login", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(login),
             });
 
             const data = await response.json();
-            if (response.ok) {
-              alert("Ad added successfully!");
-              document.getElementById("adForm").reset();
+            console.log(data);
+
+            if (data.success) {
+              localStorage.setItem("isAuthenticated", "true");
+
               window.location.href = "index.html";
             } else {
+              console.log("error", data);
+
               alert(data.error);
             }
           } catch (error) {

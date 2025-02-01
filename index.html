@@ -8,14 +8,24 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         fetchAds();
+        checkAuthentication(); // Check if the user is authenticated
       });
 
       const adsPerPage = 5; // Number of ads per page
       let currentPage = 1;
       let ads = []; // Store all ads for pagination
 
+      function checkAuthentication() {
+        const isAuthenticated = localStorage.getItem("isAuthenticated");
+        if (!isAuthenticated) {
+          window.location.href = "login.html"; // Redirect to login if not authenticated
+        } else {
+          fetchAds(); // Fetch ads if authenticated
+        }
+      }
+
       function fetchAds() {
-        fetch("http://139.59.60.177/api/ads")
+        fetch("http://localhost:3000/api/ads")
           .then((response) => response.json())
           .then((data) => {
             ads = data; // Store fetched ads
@@ -115,7 +125,7 @@
       }
 
       function viewEmbedScript(adId) {
-        fetch(`http://139.59.60.177/api/ads/embed_script/${adId}`)
+        fetch(`http://139.59.60.177/api/ads/view_embed_script/${adId}`)
           .then((response) => response.json())
           .then((data) => {
             alert("Embed Script:\n\n" + data.embed_code);
