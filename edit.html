@@ -95,7 +95,7 @@
           };
 
           try {
-            const response = await fetch(`http://localhost:3000/ads/${adId}`, {
+            const response = await fetch(`http://139.59.60.177/ads/${adId}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(updatedAd),
